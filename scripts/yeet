@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+echo "DELETING ALL CURRENT CHANGES"
+read -p "Continue? (Enter to proceed, Ctrl+C to abort) "
+
+git add -A
+git commit -qm 'WIPE SAVEPOINT'
+git reset HEAD~1 --hard

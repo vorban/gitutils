@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+echo "DELETING LOCAL BRANCHES WHOSE UPSTREAM IS GONE"
+read -p "Continue? (Enter to proceed, Ctrl+C to abort) "
+
+git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -n1 git branch -D
