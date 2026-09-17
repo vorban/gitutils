@@ -2,7 +2,8 @@
 set -e
 
 echo "DELETING ALL CURRENT CHANGES"
-read -p "Continue? (Enter to proceed, Ctrl+C to abort) "
+printf "Continue? (Enter to proceed, Ctrl+C to abort) "
+read _
 
 git add -A
 git commit -qm 'WIPE SAVEPOINT'
