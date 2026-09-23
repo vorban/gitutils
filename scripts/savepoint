@@ -1,9 +1,0 @@
-#!/bin/sh
-set -e
-
-echo "COMMITTING SAVEPOINT"
-printf "Continue? (Enter to proceed, Ctrl+C to abort) "
-read _
-
-git add -A
-git commit -m 'SAVEPOINT'

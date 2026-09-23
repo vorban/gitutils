@@ -1,8 +1,0 @@
-#!/bin/sh
-set -e
-
-echo "POPPING LAST COMMIT INTO CURRENT CHANGES"
-printf "Continue? (Enter to proceed, Ctrl+C to abort) "
-read _
-
-git reset HEAD~1 --mixed
