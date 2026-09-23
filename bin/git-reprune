@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Valentin Orban
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+set -e
+. "$(dirname "$0")/../lib/ui.sh"
+
+branches=$(git branch -vv | grep ': gone]' | awk '{print $1}')
+
+if [ -z "$branches" ]; then
+	success "No local branches with a gone upstream, nothing to delete."
+	exit 0
+fi
+
+warn "Deleting local branches whose upstream is gone:"
+printf '%s\n' "$branches"
+confirm
+
+printf '%s\n' "$branches" | xargs -n1 git branch -D

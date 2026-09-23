@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Valentin Orban
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+set -e
+. "$(dirname "$0")/../lib/ui.sh"
+
+danger "Deleting all current changes."
+confirm
+
+git add -A
+git -c core.hooksPath=/dev/null commit -qm 'WIPE SAVEPOINT'
+git reset HEAD~1 --hard

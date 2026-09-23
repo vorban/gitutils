@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Valentin Orban
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+set -e
+. "$(dirname "$0")/../lib/ui.sh"
+
+info "Committing savepoint."
+confirm
+
+git add -A
+git -c core.hooksPath=/dev/null commit -m 'SAVEPOINT'

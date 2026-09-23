@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Valentin Orban
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+set -e
+. "$(dirname "$0")/../lib/ui.sh"
+
+warn "Popping last commit into current changes."
+confirm
+
+git reset HEAD~1 --mixed
