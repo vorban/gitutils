@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Valentin Orban
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+set -e
+. "$(dirname "$0")/../lib/ui.sh"
+
+current=$(git symbolic-ref --short HEAD)
+
+# Git doesn't record which branch another one was created from, so unless the
+# parent is given, pick the local branch whose fork point is closest to HEAD.
+# Branches that already contain HEAD are skipped: they are children (or the
+# branch was merged), not parents.
+parent=${1-}
+if [ -z "$parent" ]; then
+	best=''
+	for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+		[ "$branch" = "$current" ] && continue
+		git merge-base --is-ancestor HEAD "$branch" && continue
+		base=$(git merge-base HEAD "$branch") || continue
+		distance=$(git rev-list --count "$base..HEAD")
+		if [ -z "$best" ] || [ "$distance" -lt "$best" ]; then
+			best=$distance parent=$branch
+		fi
+	done
+	if [ -z "$parent" ]; then
+		danger "Could not find a parent branch for '$current'. Pass it as an argument."
+		exit 1
+	fi
+fi
+
+base=$(git merge-base "$current" "$parent")
+count=$(git rev-list --count "$base..HEAD")
+
+if [ "$count" -eq 0 ]; then
+	success "No commits on '$current' since '$parent', nothing to squash."
+	exit 0
+fi
+
+warn "Squashing $count commit(s) of '$current' (parent: '$parent') into unstaged changes:"
+git log --oneline "$base..HEAD"
+confirm
+
+git reset --soft "$base"
+git reset -q

@@ -22,6 +22,7 @@ Git runs any executable named `git-<name>` found on your `PATH` as `git <name>`,
 
 ## Commands
 
+- `git bsquash [parent]`: squash the current branch's commits into unstaged changes, by resetting to its merge-base with the parent branch. The parent defaults to the local branch the current one most likely forked from.
 - `git reprune`: delete local branches whose upstream is gone.
 - `git savepoint`: commit all current changes as a `SAVEPOINT` commit, skipping hooks.
 - `git undo`: pop the last commit back into the working tree (`reset --mixed HEAD~1`).
