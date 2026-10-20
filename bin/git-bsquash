@@ -12,17 +12,27 @@ current=$(git symbolic-ref --short HEAD)
 # Git doesn't record which branch another one was created from, so unless the
 # parent is given, pick the local branch whose fork point is closest to HEAD.
 # Branches that already contain HEAD are skipped: they are children (or the
-# branch was merged), not parents.
+# branch was merged), not parents. Ties go to the usual mainline branches.
+rank() {
+	case $1 in
+		master|main) echo 0 ;;
+		dev|develop) echo 1 ;;
+		*) echo 255 ;;
+	esac
+}
+
 parent=${1-}
 if [ -z "$parent" ]; then
-	best=''
+	best='' best_rank=''
 	for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
 		[ "$branch" = "$current" ] && continue
 		git merge-base --is-ancestor HEAD "$branch" && continue
 		base=$(git merge-base HEAD "$branch") || continue
 		distance=$(git rev-list --count "$base..HEAD")
-		if [ -z "$best" ] || [ "$distance" -lt "$best" ]; then
-			best=$distance parent=$branch
+		r=$(rank "$branch")
+		if [ -z "$best" ] || [ "$distance" -lt "$best" ] ||
+			{ [ "$distance" -eq "$best" ] && [ "$r" -lt "$best_rank" ]; }; then
+			best=$distance best_rank=$r parent=$branch
 		fi
 	done
 	if [ -z "$parent" ]; then
@@ -40,7 +50,7 @@ if [ "$count" -eq 0 ]; then
 fi
 
 warn "Squashing $count commit(s) of '$current' (parent: '$parent') into unstaged changes:"
-git log --oneline "$base..HEAD"
+git --no-pager log --oneline "$base..HEAD"
 confirm
 
 git reset --soft "$base"
